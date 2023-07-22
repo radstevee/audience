@@ -6,6 +6,7 @@ import dev.andante.audience.title.Title;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.BundleS2CPacket;
 import net.minecraft.network.packet.s2c.play.ClearTitleS2CPacket;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -151,15 +152,19 @@ public interface Audience {
      * Forces all audience players to respawn.
      */
     default void respawn() {
-        forEachAudience(player -> {
-            ServerPlayNetworkHandler handler = player.networkHandler;
-            PlayerManager playerManager = player.server.getPlayerManager();
-            if (player.notInAnyWorld) {
-                player.notInAnyWorld = false;
-                handler.player = playerManager.respawnPlayer(player, true);
-            } else {
-                if (!(player.getHealth() > 0)) {
-                    handler.player = playerManager.respawnPlayer(player, false);
+        forEachAudience(expectedPlayer -> {
+            MinecraftServer server = expectedPlayer.server;
+            PlayerManager playerManager = server.getPlayerManager();
+            ServerPlayerEntity player = playerManager.getPlayer(expectedPlayer.getUuid());
+            if (player != null) {
+                ServerPlayNetworkHandler handler = player.networkHandler;
+                if (player.notInAnyWorld) {
+                    player.notInAnyWorld = false;
+                    handler.player = playerManager.respawnPlayer(player, true);
+                } else {
+                    if (!(player.getHealth() > 0)) {
+                        handler.player = playerManager.respawnPlayer(player, false);
+                    }
                 }
             }
         });
