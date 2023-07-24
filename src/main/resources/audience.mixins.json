@@ -3,7 +3,8 @@
     "package": "dev.andante.audience.mixin",
     "compatibilityLevel": "JAVA_17",
     "mixins": [
-        "ServerPlayerEntityMixin"
+        "ServerPlayerEntityMixin",
+        "ServerWorldMixin"
     ],
     "injectors": {
         "defaultRequire": 1
