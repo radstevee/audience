@@ -4,12 +4,23 @@
 	"version": "${version}",
 	"name": "Audience",
 	"environment": "*",
+    "entrypoints": {
+        "main": [
+            {
+                "adapter": "kotlin",
+                "value": "dev.andante.audience.Audience"
+            }
+        ]
+    },
 	"mixins": [
 		"audience.mixins.json"
 	],
     "custom": {
         "loom:injected_interfaces": {
-            "net/minecraft/class_3222": [ "dev/andante/audience/Audience" ],
+            "net/minecraft/class_3222": [
+                "dev/andante/audience/Audience",
+                "dev/andante/audience/player/PlayerReference"
+            ],
             "net/minecraft/class_3218": [ "dev/andante/audience/Audience" ]
         }
     }
