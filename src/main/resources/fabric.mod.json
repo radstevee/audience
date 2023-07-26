@@ -8,7 +8,7 @@
         "main": [
             {
                 "adapter": "kotlin",
-                "value": "dev.andante.audience.Audience"
+                "value": "dev.andante.audience.AudienceInitializer"
             }
         ]
     },
