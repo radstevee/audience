@@ -24,4 +24,17 @@ public abstract class ServerPlayerEntityMixin implements Audience, PlayerReferen
         ServerPlayerEntity that = (ServerPlayerEntity) (Object) this;
         return that.getUuid();
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (super.equals(obj)) {
+            return true;
+        }
+
+        if (obj instanceof PlayerReference reference) {
+            return reference.getReferenceUuid() == this.getReferenceUuid();
+        }
+
+        return false;
+    }
 }
