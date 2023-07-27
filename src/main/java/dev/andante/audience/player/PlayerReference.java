@@ -35,6 +35,23 @@ public interface PlayerReference extends Audience {
     }
 
     /**
+     * Returns a standalone version of this player reference.
+     *
+     * <p>
+     * Useful for storing instances of a player reference in a memory leak-safe way.
+     * For example, {@link ServerPlayerEntity} objects are instances of {@link PlayerReference},
+     * but {@link ServerPlayerEntity} objects should not persist after the player leaves or respawns,
+     * whereas {@link PlayerReference} objects can.
+     * </p>
+     *
+     * @return the cached version of this player reference
+     */
+    default StandalonePlayerReference getHardReference() {
+        UUID uuid = this.getReferenceUuid();
+        return PlayerReferences.INSTANCE.getOrCreate(uuid);
+    }
+
+    /**
      * The online player for this reference.
      */
     @Nullable

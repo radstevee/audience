@@ -3,9 +3,14 @@ package dev.andante.audience.player
 import java.util.UUID
 
 /**
- * An instantiatiable player reference.
+ * An instantiatiable, unattached player reference.
  */
 class StandalonePlayerReference(private val referenceImplUuid: UUID) : PlayerReference {
+    override fun getHardReference(): StandalonePlayerReference {
+        // return this, as all standlone references are hard references
+        return this
+    }
+
     override fun getReferenceUuid(): UUID {
         return referenceImplUuid
     }
