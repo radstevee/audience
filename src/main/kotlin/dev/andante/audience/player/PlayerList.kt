@@ -8,36 +8,9 @@ import java.util.function.Consumer
 /**
  * A list of players stored as references.
  */
-class PlayerList() : AbstractMutableSet<PlayerReference>(), Audience {
-    private val backingSet: MutableSet<StandalonePlayerReference> = mutableSetOf()
-
+class PlayerList() : HashSet<StandalonePlayerReference>(), Audience {
     constructor(players: Collection<PlayerReference>) : this() {
-        addAll(players)
-    }
-
-    override val size: Int get() = backingSet.size
-
-    override fun iterator(): MutableIterator<PlayerReference> {
-        return backingSet.iterator()
-    }
-
-    /**
-     * Adds a hard reference to the list, from [element].
-     */
-    override fun add(element: PlayerReference): Boolean {
-        return backingSet.add(element.hardReference)
-    }
-
-    override fun remove(element: PlayerReference): Boolean {
-        return backingSet.remove(element.hardReference)
-    }
-
-    override fun contains(element: PlayerReference): Boolean {
-        return backingSet.contains(element.hardReference)
-    }
-
-    override fun clear() {
-        backingSet.clear()
+        addAll(players.map(PlayerReference::getHardReference))
     }
 
     /**
@@ -52,7 +25,9 @@ class PlayerList() : AbstractMutableSet<PlayerReference>(), Audience {
      * @return a new list
      */
     operator fun plus(other: PlayerList): PlayerList {
-        return PlayerList(backingSet + other)
+        val list = PlayerList(this)
+        list.addAll(other)
+        return list
     }
 
     /**
@@ -85,6 +60,6 @@ class PlayerList() : AbstractMutableSet<PlayerReference>(), Audience {
         /**
          * The codec of this class.
          */
-        val CODEC: Codec<PlayerList> = PlayerReference.CODEC.listOf().xmap(::PlayerList) { it.backingSet.toList() }
+        val CODEC: Codec<PlayerList> = StandalonePlayerReference.CODEC.listOf().xmap(::PlayerList) { it.toList() }
     }
 }
