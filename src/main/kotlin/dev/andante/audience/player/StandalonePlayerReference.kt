@@ -1,5 +1,8 @@
 package dev.andante.audience.player
 
+import com.mojang.serialization.Codec
+import com.mojang.serialization.codecs.RecordCodecBuilder
+import net.minecraft.util.Uuids
 import java.util.UUID
 
 /**
@@ -33,5 +36,16 @@ class StandalonePlayerReference(private val referenceImplUuid: UUID) : PlayerRef
 
     override fun toString(): String {
         return "$referenceUuid[$playerName]"
+    }
+
+    companion object {
+        /**
+         * The codec for this class.
+         */
+        val CODEC: Codec<StandalonePlayerReference> = RecordCodecBuilder.create { instance ->
+            instance.group(
+                Uuids.CODEC.fieldOf("uuid").forGetter(PlayerReference::getReferenceUuid)
+            ).apply(instance, ::StandalonePlayerReference)
+        }
     }
 }
