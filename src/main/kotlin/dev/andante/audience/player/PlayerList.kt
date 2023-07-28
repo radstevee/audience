@@ -28,6 +28,18 @@ class PlayerList() : AbstractMutableSet<PlayerReference>(), Audience {
         return backingSet.add(element.hardReference)
     }
 
+    override fun remove(element: PlayerReference): Boolean {
+        return backingSet.remove(element)
+    }
+
+    override fun contains(element: PlayerReference): Boolean {
+        return backingSet.contains(element)
+    }
+
+    override fun clear() {
+        backingSet.clear()
+    }
+
     /**
      * @return a list containing only elements matching the given [predicate]
      */
@@ -47,7 +59,7 @@ class PlayerList() : AbstractMutableSet<PlayerReference>(), Audience {
      * Joins this list into a string of the players' names.
      */
     fun joinToNamedString(): String {
-        return joinToString(transform = PlayerReference::getPlayerName)
+        return joinToString { it.playerName }
     }
 
     /**
