@@ -29,11 +29,11 @@ class PlayerList() : AbstractMutableSet<PlayerReference>(), Audience {
     }
 
     override fun remove(element: PlayerReference): Boolean {
-        return backingSet.remove(element)
+        return backingSet.remove(element.hardReference)
     }
 
     override fun contains(element: PlayerReference): Boolean {
-        return backingSet.contains(element)
+        return backingSet.contains(element.hardReference)
     }
 
     override fun clear() {
