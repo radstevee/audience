@@ -46,6 +46,14 @@ class PlayerList() : HashSet<StandalonePlayerReference>(), Audience {
     }
 
     /**
+     * Copies the player list.
+     * @return a copy of this player list
+     */
+    fun copy(): PlayerList {
+        return PlayerList(this)
+    }
+
+    /**
      * Performs [action] for each player in this list.
      */
     fun forEachPlayer(action: Consumer<in ServerPlayerEntity>) {
