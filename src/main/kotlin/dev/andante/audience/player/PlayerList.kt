@@ -60,8 +60,8 @@ class PlayerList() : HashSet<StandalonePlayerReference>(), Audience {
         toPlayers().forEach(action)
     }
 
-    override fun getAudiencePlayers(): List<ServerPlayerEntity> {
-        return toPlayers()
+    override fun getAudiencePlayers(): PlayerList {
+        return this
     }
 
     companion object {

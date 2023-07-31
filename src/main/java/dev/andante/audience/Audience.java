@@ -1,5 +1,6 @@
 package dev.andante.audience;
 
+import dev.andante.audience.player.PlayerList;
 import dev.andante.audience.sound.Sound;
 import dev.andante.audience.sound.SoundStop;
 import dev.andante.audience.title.Title;
@@ -17,8 +18,6 @@ import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.ApiStatus.Experimental;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -27,8 +26,8 @@ public interface Audience {
     /**
      * The players of this audience.
      */
-    default List<ServerPlayerEntity> getAudiencePlayers() {
-        return Collections.emptyList();
+    default PlayerList getAudiencePlayers() {
+        return new PlayerList();
     }
 
     /**
@@ -174,7 +173,7 @@ public interface Audience {
      * Calls the given action for each audience player.
      */
     default void forEachAudience(Consumer<ServerPlayerEntity> action) {
-        getAudiencePlayers().forEach(action);
+        getAudiencePlayers().toPlayers().forEach(action);
     }
 
     /**

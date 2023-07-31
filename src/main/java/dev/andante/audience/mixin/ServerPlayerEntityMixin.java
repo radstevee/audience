@@ -1,22 +1,22 @@
 package dev.andante.audience.mixin;
 
 import dev.andante.audience.Audience;
+import dev.andante.audience.player.PlayerList;
 import dev.andante.audience.player.PlayerReference;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.UUID;
 
 @SuppressWarnings("AddedMixinMembersNamePattern")
 @Mixin(ServerPlayerEntity.class)
 public abstract class ServerPlayerEntityMixin implements Audience, PlayerReference {
     @Override
-    public @NotNull List<ServerPlayerEntity> getAudiencePlayers() {
+    public @NotNull PlayerList getAudiencePlayers() {
         ServerPlayerEntity that = (ServerPlayerEntity) (Object) this;
-        return Collections.singletonList(that);
+        return new PlayerList(Collections.singletonList(that));
     }
 
     @Override

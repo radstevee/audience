@@ -14,7 +14,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -101,12 +100,12 @@ public interface PlayerReference extends Audience {
     }
 
     @Override
-    default List<ServerPlayerEntity> getAudiencePlayers() {
+    default PlayerList getAudiencePlayers() {
         ServerPlayerEntity player = this.getPlayer();
         if (player == null) {
-            return Collections.emptyList();
+            return new PlayerList();
         }
 
-        return Collections.singletonList(player);
+        return new PlayerList(Collections.singletonList(player));
     }
 }
