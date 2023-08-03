@@ -1,6 +1,7 @@
 package dev.andante.audience;
 
 import dev.andante.audience.player.PlayerList;
+import dev.andante.audience.resource.ServerResourcePackSettings;
 import dev.andante.audience.sound.Sound;
 import dev.andante.audience.sound.SoundStop;
 import dev.andante.audience.title.Title;
@@ -17,6 +18,7 @@ import net.minecraft.util.Pair;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.ApiStatus.Experimental;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -190,5 +192,12 @@ public interface Audience {
     @Experimental
     default void sendAllPacket(Function<ServerPlayerEntity, Packet<?>> packet) {
         forEachAudience(player -> player.networkHandler.sendPacket(packet.apply(player)));
+    }
+
+    /**
+     * Sets all audience player resource packs to the given resource pack.
+     */
+    default void setResourcePack(@Nullable ServerResourcePackSettings resourcePack) {
+        forEachAudience(player -> player.setResourcePack(resourcePack));
     }
 }
