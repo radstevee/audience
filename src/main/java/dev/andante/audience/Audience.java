@@ -17,7 +17,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Pair;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
-import org.jetbrains.annotations.ApiStatus.Experimental;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
@@ -97,7 +96,7 @@ public interface Audience {
      * Clears the titles of all audience players.
      */
     default void clearTitle() {
-        sendAllPacket(new ClearTitleS2CPacket(true));
+        packet(new ClearTitleS2CPacket(true));
     }
 
     /**
@@ -118,28 +117,28 @@ public interface Audience {
      * Broadcasts the given sound to the audience.
      */
     default void sound(Sound sound) {
-        sendAllPacket(sound.getPacket());
+        packet(sound.getPacket());
     }
 
     /**
      * Broadcasts the given sound to the audience at the position provided by [positionSupplier].
      */
     default void positionedSound(Sound sound, Function<ServerPlayerEntity, Vec3d> positionSupplier) {
-        sendAllPacket(player -> sound.packet(positionSupplier.apply(player)));
+        packet(player -> sound.packet(positionSupplier.apply(player)));
     }
 
     /**
      * Broadcasts the given sound to the audience at the given position.
      */
     default void positionedSound(Sound sound, Vec3d position) {
-        sendAllPacket(sound.packet(position));
+        packet(sound.packet(position));
     }
 
     /**
      * Stops the given sound on all audience players.
      */
     default void stopSound(SoundStop soundStop) {
-        sendAllPacket(soundStop.getPacket());
+        packet(soundStop.getPacket());
     }
 
     /**
@@ -172,25 +171,16 @@ public interface Audience {
     }
 
     /**
-     * Calls the given action for each audience player.
-     */
-    default void forEachAudience(Consumer<ServerPlayerEntity> action) {
-        getAudiencePlayers().toPlayers().forEach(action);
-    }
-
-    /**
      * Sends the given packet to all audience players.
      */
-    @Experimental
-    default void sendAllPacket(Packet<?> packet) {
+    default void packet(Packet<?> packet) {
         forEachAudience(player -> player.networkHandler.sendPacket(packet));
     }
 
     /**
      * Sends the given packet to all audience players.
      */
-    @Experimental
-    default void sendAllPacket(Function<ServerPlayerEntity, Packet<?>> packet) {
+    default void packet(Function<ServerPlayerEntity, Packet<?>> packet) {
         forEachAudience(player -> player.networkHandler.sendPacket(packet.apply(player)));
     }
 
@@ -199,5 +189,12 @@ public interface Audience {
      */
     default void setResourcePack(@Nullable ServerResourcePackSettings resourcePack) {
         forEachAudience(player -> player.setResourcePack(resourcePack));
+    }
+
+    /**
+     * Calls the given action for each audience player.
+     */
+    default void forEachAudience(Consumer<ServerPlayerEntity> action) {
+        getAudiencePlayers().toPlayers().forEach(action);
     }
 }
