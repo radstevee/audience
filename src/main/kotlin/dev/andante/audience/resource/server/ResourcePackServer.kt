@@ -46,9 +46,11 @@ class ResourcePackServer private constructor(
 
                 val request = ResourcePackRequest(uuid, username, clientVersion, clientVersionId, packFormat)
                 try {
-                    exchange.use { handler.onRequest(request, exchange) }
+                    handler.onRequest(request, exchange)
                 } catch (exception: Exception) {
                     handler.onException(exception)
+                } finally {
+                    exchange.close()
                 }
             } else {
                 handler.onInvalidRequest(exchange)
