@@ -5,7 +5,7 @@ import com.google.common.hash.Hashing
 /**
  * A complete resource pack.
  */
-data class BuiltResourcePack(
+data class ResourcePack(
     /**
      * All bytes composting the resource pack.
      */
@@ -20,13 +20,13 @@ data class BuiltResourcePack(
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as BuiltResourcePack
+        other as ResourcePack
 
-        return bytes.contentEquals(other.bytes)
+        return hash == other.hash
     }
 
     override fun hashCode(): Int {
-        return bytes.contentHashCode()
+        return hash.hashCode()
     }
 
     companion object {

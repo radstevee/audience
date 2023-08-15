@@ -1,0 +1,13 @@
+{
+    "schemaVersion": 1,
+    "id": "audience-test",
+    "version": "${version}.test",
+    "entrypoints": {
+        "main": [
+            {
+                "adapter": "kotlin",
+                "value": "dev.andante.audience.test.AudienceTest"
+            }
+        ]
+    }
+}

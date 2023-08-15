@@ -1,76 +1,85 @@
 package dev.andante.audience.resource.server
 
-import com.sun.net.httpserver.HttpExchange
 import com.sun.net.httpserver.HttpServer
-import dev.andante.audience.resource.BuiltResourcePack
-import java.io.IOException
+import dev.andante.audience.resource.ResourcePack
+import net.minecraft.text.Text
 import java.net.InetSocketAddress
-import java.util.UUID
 
-class ResourcePackServer private constructor(
-    val httpServer: HttpServer,
-    path: String,
-    private val handler: ResourcePackRequestHandler
+/**
+ * A wrapper around an http server for serving resource packs.
+ */
+class ResourcePackServer(
+    /**
+     * The root address of this server.
+     */
+    rootAddress: String,
+
+    /**
+     * The port of this server.
+     */
+    port: Int = 0
 ) {
-    init {
-        httpServer.createContext(path, ::handleRequest)
-    }
+    /**
+     * The socket address of this server.
+     */
+    private val socketAddress = InetSocketAddress(rootAddress, port)
 
-    fun start() {
+    /**
+     * The underlying http server.
+     */
+    private val httpServer: HttpServer = HttpServer.create(socketAddress, 0)
+
+    /**
+     * The compiled root address.
+     */
+    val address = "http://$rootAddress:$port"
+
+    /**
+     * The port of this server.
+     */
+    val port = socketAddress.port
+
+    /**
+     * Starts the http server.
+     */
+    fun startServer() {
         httpServer.start()
     }
 
-    fun stop(delay: Int) {
+    /**
+     * Stops the http server.
+     */
+    fun stopServer(delay: Int = 0) {
         httpServer.stop(delay)
     }
 
-    @Throws(IOException::class)
-    private fun handleRequest(exchange: HttpExchange) {
-        if ("GET" != exchange.requestMethod) {
-            exchange.close()
-        } else {
-            val headers = exchange.requestHeaders
-            val username = headers.getFirst("X-Minecraft-Username")
-            val rawUuid = headers.getFirst("X-Minecraft-UUID")
-            val clientVersion = headers.getFirst("X-Minecraft-Version")
-            val clientVersionId = headers.getFirst("X-Minecraft-Version-ID")
-            val rawPackFormat = headers.getFirst("X-Minecraft-Pack-Format")
-            if (username != null && rawUuid != null && clientVersion != null && clientVersionId != null && rawPackFormat != null) {
-                val (uuid: UUID, packFormat: Int) = try {
-                    uuidFromUndashedString(rawUuid) to rawPackFormat.toInt()
-                } catch (exception: IllegalArgumentException) {
-                    handler.onInvalidRequest(exchange)
-                    exchange.close()
-                    return
-                }
-
-                val request = ResourcePackRequest(uuid, username, clientVersion, clientVersionId, packFormat)
-                try {
-                    handler.onRequest(request, exchange)
-                } catch (exception: Exception) {
-                    handler.onException(exception)
-                } finally {
-                    exchange.close()
-                }
-            } else {
-                handler.onInvalidRequest(exchange)
-                exchange.close()
-            }
-        }
+    /**
+     * Registers a resource pack to be handled by this server.
+     */
+    fun registerResourcePack(resourcePack: ResourcePack): ResourcePackProperties {
+        val hash = resourcePack.hash
+        httpServer.createContext("/$hash", ResourcePackRequestHandler(resourcePack))
+        return createResourcePackProperties(resourcePack)
     }
 
-    companion object {
-        private val UNDASHED_STRING_REGEX = Regex("(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})")
-        private const val DASHED_STRING_REPLACEMENT = "$1-$2-$3-$4-$5"
+    /**
+     * Creates a resource pack properties object based on [resourcePack] and this server.
+     */
+    fun createResourcePackProperties(
+        resourcePack: ResourcePack,
+        required: Boolean = true,
+        prompt: Text? = null
+    ): ResourcePackProperties {
+        val url = getUrl(resourcePack)
+        return ResourcePackProperties(url, resourcePack.hash, required, prompt)
+    }
 
-        private fun uuidFromUndashedString(str: String): UUID {
-            return UUID.fromString(str.replace(UNDASHED_STRING_REGEX, DASHED_STRING_REPLACEMENT))
-        }
-
-        fun create(hostname: String, port: Int, pack: BuiltResourcePack): ResourcePackServer {
-            val address = InetSocketAddress(hostname, port)
-            val server = HttpServer.create(address, 0)
-            return ResourcePackServer(server, "/", ResourcePackRequestHandler.of(pack))
-        }
+    /**
+     * Gets the address of the given [resourcePack].
+     * @return a url string
+     */
+    fun getUrl(resourcePack: ResourcePack): String {
+        val hash = resourcePack.hash
+        return "$address/$hash"
     }
 }

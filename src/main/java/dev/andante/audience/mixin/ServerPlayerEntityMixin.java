@@ -1,9 +1,11 @@
 package dev.andante.audience.mixin;
 
 import dev.andante.audience.Audience;
+import dev.andante.audience.mixinterface.AudiencePlayerAccessor;
 import dev.andante.audience.player.PlayerList;
 import dev.andante.audience.player.PlayerReference;
-import dev.andante.audience.resource.ServerResourcePackSettings;
+import dev.andante.audience.resource.server.ResourcePackProperties;
+import dev.andante.audience.resource.server.ResourcePackRequestCallback;
 import net.minecraft.network.packet.s2c.play.ResourcePackSendS2CPacket;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -12,16 +14,32 @@ import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Collections;
 import java.util.UUID;
 
 @SuppressWarnings("AddedMixinMembersNamePattern")
 @Mixin(ServerPlayerEntity.class)
-public abstract class ServerPlayerEntityMixin implements Audience, PlayerReference {
-    @Shadow public ServerPlayNetworkHandler networkHandler;
+public abstract class ServerPlayerEntityMixin implements Audience, PlayerReference, AudiencePlayerAccessor {
+    @Shadow
+    public ServerPlayNetworkHandler networkHandler;
 
-    @Unique private ServerResourcePackSettings latestResourcePack = null;
+    /**
+     * The last resource pack sent to the player.
+     */
+    @Unique
+    @Nullable
+    private ResourcePackProperties lastResourcePack = null;
+
+    /**
+     * The current callback to perform when the client responds to the resource pack.
+     */
+    @Unique
+    @Nullable
+    private ResourcePackRequestCallback resourcePackRequestCallback = null;
 
     @Override
     public @NotNull PlayerList getAudiencePlayers() {
@@ -35,31 +53,53 @@ public abstract class ServerPlayerEntityMixin implements Audience, PlayerReferen
         return that.getUuid();
     }
 
+    @Nullable
     @Override
-    public void setResourcePack(@Nullable ServerResourcePackSettings resourcePack) {
-        if (resourcePack == this.latestResourcePack) {
-            return;
-        }
+    public ResourcePackRequestCallback getResourcePackRequestCallback() {
+        return this.resourcePackRequestCallback;
+    }
 
-        if (resourcePack != null) {
-            this.networkHandler.sendPacket(new ResourcePackSendS2CPacket(
-                    resourcePack.getUrl(),
-                    resourcePack.getHash(),
-                    resourcePack.getRequired(),
-                    resourcePack.getPrompt()
-            ));
-        }
-
-        this.latestResourcePack = resourcePack;
+    @Nullable
+    @Override
+    public ResourcePackRequestCallback clearResourcePackRequestCallback() {
+        ResourcePackRequestCallback callback = this.resourcePackRequestCallback;
+        this.resourcePackRequestCallback = null;
+        return callback;
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (super.equals(obj)) {
+    public void setResourcePack(ResourcePackProperties properties, @Nullable ResourcePackRequestCallback callback) {
+        if (properties == this.lastResourcePack) {
+            return;
+        }
+
+        if (properties != null) {
+            this.networkHandler.sendPacket(
+                    new ResourcePackSendS2CPacket(
+                            properties.getUrl(),
+                            properties.getHash(),
+                            properties.getRequired(),
+                            properties.getPrompt()
+                    )
+            );
+        }
+
+        this.lastResourcePack = properties;
+        this.resourcePackRequestCallback = callback;
+    }
+
+    @Inject(method = "copyFrom", at = @At("TAIL"))
+    private void onCopyFrom(ServerPlayerEntity oldPlayer, boolean alive, CallbackInfo ci) {
+        this.resourcePackRequestCallback = ((AudiencePlayerAccessor) oldPlayer).getResourcePackRequestCallback();
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (super.equals(other)) {
             return true;
         }
 
-        if (obj instanceof PlayerReference reference) {
+        if (other instanceof PlayerReference reference) {
             return reference.getReferenceUuid() == this.getReferenceUuid();
         }
 

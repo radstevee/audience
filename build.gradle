@@ -19,6 +19,23 @@ dependencies {
     include modImplementation ("com.github.yundom:kache:$kache_version")
 }
 
+sourceSets {
+    test {
+        compileClasspath += main.compileClasspath
+        runtimeClasspath += main.runtimeClasspath
+    }
+}
+
+loom {
+    runs {
+        testServer {
+            server()
+            name = "Minecraft Server (Test)"
+            source sourceSets.test
+        }
+    }
+}
+
 processResources {
     inputs.property "version", version
 
@@ -46,7 +63,7 @@ java {
 
 jar {
     from("LICENSE") {
-        rename { "${it}_archivesBaseName}"}
+        rename { "${it}_$archivesBaseName"}
     }
 }
 

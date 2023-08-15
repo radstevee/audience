@@ -1,7 +1,8 @@
 package dev.andante.audience;
 
 import dev.andante.audience.player.PlayerList;
-import dev.andante.audience.resource.ServerResourcePackSettings;
+import dev.andante.audience.resource.server.ResourcePackProperties;
+import dev.andante.audience.resource.server.ResourcePackRequestCallback;
 import dev.andante.audience.sound.Sound;
 import dev.andante.audience.sound.SoundStop;
 import dev.andante.audience.title.Title;
@@ -187,8 +188,15 @@ public interface Audience {
     /**
      * Sets all audience player resource packs to the given resource pack.
      */
-    default void setResourcePack(@Nullable ServerResourcePackSettings resourcePack) {
-        forEachAudience(player -> player.setResourcePack(resourcePack));
+    default void setResourcePack(ResourcePackProperties properties, @Nullable ResourcePackRequestCallback callback) {
+        forEachAudience(player -> player.setResourcePack(properties, callback));
+    }
+
+    /**
+     * Sets all audience player resource packs to the given resource pack.
+     */
+    default void setResourcePack(ResourcePackProperties properties) {
+        setResourcePack(properties, null);
     }
 
     /**

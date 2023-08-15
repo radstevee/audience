@@ -12,7 +12,8 @@ import java.util.List;
 @SuppressWarnings("AddedMixinMembersNamePattern")
 @Mixin(ServerWorld.class)
 public abstract class ServerWorldMixin implements Audience {
-    @Shadow public abstract List<ServerPlayerEntity> getPlayers();
+    @Shadow
+    public abstract List<ServerPlayerEntity> getPlayers();
 
     @Override
     public PlayerList getAudiencePlayers() {

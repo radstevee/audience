@@ -1,46 +1,67 @@
 package dev.andante.audience.resource.server
 
 import com.sun.net.httpserver.HttpExchange
-import dev.andante.audience.resource.BuiltResourcePack
+import com.sun.net.httpserver.HttpHandler
+import dev.andante.audience.resource.ResourcePack
+import org.apache.http.HttpHeaders
+import org.apache.http.client.methods.HttpGet
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import java.io.IOException
-import java.nio.charset.StandardCharsets
 
-fun interface ResourcePackRequestHandler {
-    @Throws(IOException::class)
-    fun onRequest(request: ResourcePackRequest?, exchange: HttpExchange)
+/**
+ * Handles requests for a [ResourcePackServer].
+ */
+class ResourcePackRequestHandler(
+    /**
+     * The resource pack to be sent/received.
+     */
+    private val resourcePack: ResourcePack
+) : HttpHandler {
+    /**
+     * The length of the bytes in [resourcePack].
+     */
+    private val responseLength = resourcePack.bytes.size.toLong()
 
-    fun onException(exception: Exception) {
-        System.err.println("Exception caught when serving a resource-pack")
-        exception.printStackTrace()
+    override fun handle(exchange: HttpExchange?) {
+        // throw npe if null
+        exchange ?: run { return }
+
+        // check for get
+        if (exchange.requestMethod != HttpGet.METHOD_NAME) {
+            exchange.close()
+            return
+        }
+
+        // handle request
+        try {
+            sendResourcePack(exchange)
+        } catch (exception: Exception) {
+            onException(exception)
+        } finally {
+            exchange.close()
+        }
     }
 
+    /**
+     * Sends the resource pack as a response to the request.
+     */
     @Throws(IOException::class)
-    fun onInvalidRequest(exchange: HttpExchange) {
-        val response = "Please use a Minecraft client".toByteArray(StandardCharsets.UTF_8)
-        exchange.sendResponseHeaders(400, response.size.toLong())
-        exchange.responseBody.write(response)
+    private fun sendResourcePack(exchange: HttpExchange) {
+        // write zip as response
+        exchange.responseHeaders[HttpHeaders.CONTENT_TYPE] = "application/zip"
+        exchange.sendResponseHeaders(200, responseLength)
+        exchange.responseBody.write(resourcePack.bytes)
+    }
+
+    /**
+     * Handles exceptions caught during the exchange.
+     */
+    private fun onException(exception: Exception) {
+        logger.error("Exception caught when serving a resource pack", exception)
     }
 
     companion object {
-        fun of(pack: BuiltResourcePack, validOnly: Boolean = false): ResourcePackRequestHandler {
-            return object : ResourcePackRequestHandler {
-                @Throws(IOException::class)
-                override fun onRequest(request: ResourcePackRequest?, exchange: HttpExchange) {
-                    if (request == null && validOnly) {
-                        super.onInvalidRequest(exchange)
-                    } else {
-                        val data = pack.bytes
-                        exchange.responseHeaders["Content-Type"] = "application/zip"
-                        exchange.sendResponseHeaders(200, data.size.toLong())
-                        exchange.responseBody.write(data)
-                    }
-                }
-
-                @Throws(IOException::class)
-                override fun onInvalidRequest(exchange: HttpExchange) {
-                    onRequest(null, exchange)
-                }
-            }
-        }
+        private val logger: Logger = LoggerFactory.getLogger("Resource Pack Request Handler")
     }
 }
