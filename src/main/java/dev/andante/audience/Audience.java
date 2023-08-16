@@ -125,14 +125,14 @@ public interface Audience {
      * Broadcasts the given sound to the audience at the position provided by [positionSupplier].
      */
     default void positionedSound(ISound sound, Function<ServerPlayerEntity, Vec3d> positionSupplier) {
-        packet(player -> sound.packet(positionSupplier.apply(player)));
+        packet(player -> sound.createPacket(positionSupplier.apply(player)));
     }
 
     /**
      * Broadcasts the given sound to the audience at the given position.
      */
     default void positionedSound(ISound sound, Vec3d position) {
-        packet(sound.packet(position));
+        packet(sound.createPacket(position));
     }
 
     /**

@@ -1,6 +1,9 @@
 package dev.andante.audience.sound
 
 import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket
+import net.minecraft.registry.entry.RegistryEntry
+import net.minecraft.sound.SoundCategory
+import net.minecraft.sound.SoundEvent
 import net.minecraft.util.Identifier
 import net.minecraft.util.math.Vec3d
 
@@ -14,12 +17,24 @@ interface ISound {
     val id: Identifier
 
     /**
-     * The sound packet to play this sound.
+     * The category of the sound.
      */
-    val packet: PlaySoundS2CPacket
+    val category: SoundCategory get() = SoundCategory.VOICE
 
     /**
-     * Creates a packet from the given [pos], defaulting to [Vec3d.ZERO].
+     * Retrieves a registry entry of this sound.
      */
-    fun packet(pos: Vec3d = Vec3d.ZERO): PlaySoundS2CPacket
+    val entry: RegistryEntry<SoundEvent> get() = RegistryEntry.of(SoundEvent.of(id))
+
+    /**
+     * Creates a packet from the default parameters.
+     */
+    val packet: PlaySoundS2CPacket get() = createPacket()
+
+    /**
+     * Creates a packet from the given parameters.
+     */
+    fun createPacket(pos: Vec3d = Vec3d.ZERO): PlaySoundS2CPacket {
+        return PlaySoundS2CPacket(entry, category, pos.x, pos.y, pos.z, 1.0f, 1.0f, 0L)
+    }
 }

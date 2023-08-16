@@ -1,11 +1,7 @@
 package dev.andante.audience.sound
 
-import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket
-import net.minecraft.registry.entry.RegistryEntry
 import net.minecraft.sound.SoundCategory
-import net.minecraft.sound.SoundEvent
 import net.minecraft.util.Identifier
-import net.minecraft.util.math.Vec3d
 
 /**
  * Represents an in-game sound that can be played to the client.
@@ -19,7 +15,7 @@ data class Sound(
     /**
      * The category of the sound. Defaults to the sound effects category.
      */
-    val category: SoundCategory = SoundCategory.VOICE,
+    override val category: SoundCategory = SoundCategory.VOICE,
 
     /**
      * The volume of the sound.
@@ -31,30 +27,6 @@ data class Sound(
      */
     val pitch: Float = 1.0f
 ) : ISound {
-    /**
-     * The registry entry of this sound.
-     */
-    private val entry = RegistryEntry.of(SoundEvent.of(id))
-
-    /**
-     * The sound packet to play this sound.
-     */
-    override val packet: PlaySoundS2CPacket = packet()
-
-    /**
-     * Creates a packet from the given [pos], defaulting to [Vec3d.ZERO].
-     */
-    override fun packet(pos: Vec3d): PlaySoundS2CPacket {
-        return PlaySoundS2CPacket(entry, category, pos.x, pos.y, pos.z, volume, pitch, 0L)
-    }
-
-    /**
-     * Returns this sound on the dedicated music slider.
-     */
-    fun asMusic(): Sound {
-        return category(SoundCategory.RECORDS)
-    }
-
     /**
      * Modifies the category of this sound.
      * @return a new sound
@@ -77,6 +49,13 @@ data class Sound(
      */
     fun pitch(pitch: Float): Sound {
         return copy(pitch = pitch)
+    }
+
+    /**
+     * Returns this sound on the dedicated music slider.
+     */
+    fun asMusic(): Sound {
+        return category(SoundCategory.RECORDS)
     }
 
     override fun equals(other: Any?): Boolean {
