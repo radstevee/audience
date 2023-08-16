@@ -14,7 +14,7 @@ data class Sound(
     /**
      * The id of the sound.
      */
-    val id: Identifier,
+    override val id: Identifier,
 
     /**
      * The category of the sound. Defaults to the sound effects category.
@@ -30,7 +30,7 @@ data class Sound(
      * The pitch of the sound.
      */
     val pitch: Float = 1.0f
-) {
+) : ISound {
     /**
      * The registry entry of this sound.
      */
@@ -39,12 +39,12 @@ data class Sound(
     /**
      * The sound packet to play this sound.
      */
-    val packet: PlaySoundS2CPacket = packet()
+    override val packet: PlaySoundS2CPacket = packet()
 
     /**
      * Creates a packet from the given [pos], defaulting to [Vec3d.ZERO].
      */
-    fun packet(pos: Vec3d = Vec3d.ZERO): PlaySoundS2CPacket {
+    override fun packet(pos: Vec3d): PlaySoundS2CPacket {
         return PlaySoundS2CPacket(entry, category, pos.x, pos.y, pos.z, volume, pitch, 0L)
     }
 

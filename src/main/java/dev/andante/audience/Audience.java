@@ -3,7 +3,7 @@ package dev.andante.audience;
 import dev.andante.audience.player.PlayerList;
 import dev.andante.audience.resource.server.ResourcePackProperties;
 import dev.andante.audience.resource.server.ResourcePackRequestCallback;
-import dev.andante.audience.sound.Sound;
+import dev.andante.audience.sound.ISound;
 import dev.andante.audience.sound.SoundStop;
 import dev.andante.audience.title.Title;
 import net.minecraft.network.packet.Packet;
@@ -117,21 +117,21 @@ public interface Audience {
     /**
      * Broadcasts the given sound to the audience.
      */
-    default void sound(Sound sound) {
+    default void sound(ISound sound) {
         packet(sound.getPacket());
     }
 
     /**
      * Broadcasts the given sound to the audience at the position provided by [positionSupplier].
      */
-    default void positionedSound(Sound sound, Function<ServerPlayerEntity, Vec3d> positionSupplier) {
+    default void positionedSound(ISound sound, Function<ServerPlayerEntity, Vec3d> positionSupplier) {
         packet(player -> sound.packet(positionSupplier.apply(player)));
     }
 
     /**
      * Broadcasts the given sound to the audience at the given position.
      */
-    default void positionedSound(Sound sound, Vec3d position) {
+    default void positionedSound(ISound sound, Vec3d position) {
         packet(sound.packet(position));
     }
 
