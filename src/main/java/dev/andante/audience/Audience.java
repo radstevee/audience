@@ -6,9 +6,11 @@ import dev.andante.audience.resource.server.ResourcePackRequestCallback;
 import dev.andante.audience.sound.ISound;
 import dev.andante.audience.sound.SoundStop;
 import dev.andante.audience.title.Title;
+import net.minecraft.entity.Entity;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.BundleS2CPacket;
 import net.minecraft.network.packet.s2c.play.ClearTitleS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
@@ -118,7 +120,22 @@ public interface Audience {
      * Broadcasts the given sound to the audience.
      */
     default void sound(ISound sound) {
-        packet(sound.getPacket());
+        positionedSound(sound, ServerPlayerEntity::getPos);
+    }
+
+    /**
+     * Broadcasts the given sound to the audience from the given position.
+     */
+    default void sound(ISound sound, Vec3d pos) {
+        PlaySoundS2CPacket packet = sound.createPacket(pos);
+        packet(packet);
+    }
+
+    /**
+     * Broadcasts the given sound to the audience from the given entity.
+     */
+    default void sound(ISound sound, Entity entity) {
+        sound(sound, entity.getPos());
     }
 
     /**

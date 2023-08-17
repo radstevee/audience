@@ -27,11 +27,6 @@ interface ISound {
     val entry: RegistryEntry<SoundEvent> get() = RegistryEntry.of(SoundEvent.of(id))
 
     /**
-     * Creates a packet from the default parameters.
-     */
-    val packet: PlaySoundS2CPacket get() = createPacket()
-
-    /**
      * Creates a packet from the given parameters.
      */
     fun createPacket(pos: Vec3d = Vec3d.ZERO): PlaySoundS2CPacket {
