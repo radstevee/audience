@@ -55,6 +55,12 @@ public abstract class ServerPlayerEntityMixin implements Audience, PlayerReferen
 
     @Nullable
     @Override
+    public ResourcePackProperties getLastResourcePack() {
+        return this.lastResourcePack;
+    }
+
+    @Nullable
+    @Override
     public ResourcePackRequestCallback getResourcePackRequestCallback() {
         return this.resourcePackRequestCallback;
     }
@@ -90,7 +96,9 @@ public abstract class ServerPlayerEntityMixin implements Audience, PlayerReferen
 
     @Inject(method = "copyFrom", at = @At("TAIL"))
     private void onCopyFrom(ServerPlayerEntity oldPlayer, boolean alive, CallbackInfo ci) {
-        this.resourcePackRequestCallback = ((AudiencePlayerAccessor) oldPlayer).getResourcePackRequestCallback();
+        AudiencePlayerAccessor oldPlayerAccessor = (AudiencePlayerAccessor) oldPlayer;
+        this.lastResourcePack = oldPlayerAccessor.getLastResourcePack();
+        this.resourcePackRequestCallback = oldPlayerAccessor.getResourcePackRequestCallback();
     }
 
     @Override
