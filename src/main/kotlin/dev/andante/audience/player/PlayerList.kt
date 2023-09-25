@@ -31,6 +31,15 @@ class PlayerList() : HashSet<StandalonePlayerReference>(), Audience {
     }
 
     /**
+     * Subtracts the [other] iterable from this list.
+     * @return a new list
+     */
+    fun subtract(other: Iterable<PlayerReference>): PlayerList {
+        val set = toMutableSet().subtract(other.toSet())
+        return PlayerList(set)
+    }
+
+    /**
      * Joins this list into a string of the players' names.
      */
     fun joinToNamedString(): String {
