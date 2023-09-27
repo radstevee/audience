@@ -6,7 +6,7 @@ import dev.andante.audience.player.PlayerList;
 import dev.andante.audience.player.PlayerReference;
 import dev.andante.audience.resource.server.ResourcePackProperties;
 import dev.andante.audience.resource.server.ResourcePackRequestCallback;
-import net.minecraft.network.packet.s2c.play.ResourcePackSendS2CPacket;
+import net.minecraft.network.packet.s2c.common.ResourcePackSendS2CPacket;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.jetbrains.annotations.NotNull;
@@ -34,13 +34,6 @@ public abstract class ServerPlayerEntityMixin implements Audience, PlayerReferen
     @Nullable
     private ResourcePackProperties lastResourcePack = null;
 
-    /**
-     * The current callback to perform when the client responds to the resource pack.
-     */
-    @Unique
-    @Nullable
-    private ResourcePackRequestCallback resourcePackRequestCallback = null;
-
     @Override
     public @NotNull PlayerList getAudiencePlayers() {
         ServerPlayerEntity that = (ServerPlayerEntity) (Object) this;
@@ -57,20 +50,6 @@ public abstract class ServerPlayerEntityMixin implements Audience, PlayerReferen
     @Override
     public ResourcePackProperties getLastResourcePack() {
         return this.lastResourcePack;
-    }
-
-    @Nullable
-    @Override
-    public ResourcePackRequestCallback getResourcePackRequestCallback() {
-        return this.resourcePackRequestCallback;
-    }
-
-    @Nullable
-    @Override
-    public ResourcePackRequestCallback clearResourcePackRequestCallback() {
-        ResourcePackRequestCallback callback = this.resourcePackRequestCallback;
-        this.resourcePackRequestCallback = null;
-        return callback;
     }
 
     @Override
@@ -91,14 +70,13 @@ public abstract class ServerPlayerEntityMixin implements Audience, PlayerReferen
         }
 
         this.lastResourcePack = properties;
-        this.resourcePackRequestCallback = callback;
+        ResourcePackRequestCallback.Companion.setCallback(networkHandler.player, callback);
     }
 
     @Inject(method = "copyFrom", at = @At("TAIL"))
     private void onCopyFrom(ServerPlayerEntity oldPlayer, boolean alive, CallbackInfo ci) {
         AudiencePlayerAccessor oldPlayerAccessor = (AudiencePlayerAccessor) oldPlayer;
         this.lastResourcePack = oldPlayerAccessor.getLastResourcePack();
-        this.resourcePackRequestCallback = oldPlayerAccessor.getResourcePackRequestCallback();
     }
 
     @Override
