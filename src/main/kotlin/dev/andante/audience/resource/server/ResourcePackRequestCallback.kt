@@ -9,7 +9,7 @@ import java.util.UUID
  */
 fun interface ResourcePackRequestCallback {
     /**
-     * Called when the server receiives [ResourcePackStatusC2SPacket]
+     * Called when the server receives [ResourcePackStatusC2SPacket]
      * after a resource pack was sent to the client.
      */
     fun onStatus(status: ResourcePackStatusC2SPacket.Status)

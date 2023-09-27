@@ -7,7 +7,6 @@ import dev.andante.audience.resource.server.ResourcePackServer
 import net.fabricmc.api.ModInitializer
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents
 import net.fabricmc.fabric.api.event.player.UseItemCallback
-import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents
 import net.minecraft.item.Items
 import net.minecraft.util.TypedActionResult
 import org.slf4j.LoggerFactory
@@ -33,7 +32,7 @@ object AudienceTest : ModInitializer {
         resourcePackServer.startServer()
         println("Started server on port ${resourcePackServer.port}")
 
-        UseItemCallback.EVENT.register { player, world, hand ->
+        UseItemCallback.EVENT.register { player, _, hand ->
             player as Audience
             val stack = player.getStackInHand(hand)
             if (stack.isOf(Items.STICK)) {
