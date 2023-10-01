@@ -3,6 +3,8 @@
     "package": "dev.andante.audience.mixin",
     "compatibilityLevel": "JAVA_17",
     "mixins": [
+        "BlockMixin",
+        "BlockStateMixin",
         "ServerCommonNetworkHandlerMixin",
         "ServerPlayerEntityMixin",
         "ServerWorldMixin"
