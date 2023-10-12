@@ -6,6 +6,7 @@ import dev.andante.audience.player.PlayerList;
 import dev.andante.audience.player.PlayerReference;
 import dev.andante.audience.resource.server.ResourcePackProperties;
 import dev.andante.audience.resource.server.ResourcePackRequestCallback;
+import net.minecraft.network.packet.c2s.common.ResourcePackStatusC2SPacket;
 import net.minecraft.network.packet.s2c.common.ResourcePackSendS2CPacket;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -55,6 +56,10 @@ public abstract class ServerPlayerEntityMixin implements Audience, PlayerReferen
     @Override
     public void setResourcePack(ResourcePackProperties properties, @Nullable ResourcePackRequestCallback callback) {
         if (properties == this.lastResourcePack) {
+            if (callback != null) {
+                callback.onStatus(ResourcePackStatusC2SPacket.Status.SUCCESSFULLY_LOADED);
+            }
+
             return;
         }
 
