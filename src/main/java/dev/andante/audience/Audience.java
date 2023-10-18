@@ -110,6 +110,13 @@ public interface Audience {
     }
 
     /**
+     * Sends the given action bar to all audience players.
+     */
+    default void actionBar(Function<ServerPlayerEntity, Text> text) {
+        forEachAudience(player -> player.actionBar(text.apply(player)));
+    }
+
+    /**
      * Clears the action bar of all audience players.
      */
     default void clearActionBar() {
