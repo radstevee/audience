@@ -2,12 +2,12 @@ package dev.andante.audience.test
 
 import dev.andante.audience.Audience
 import dev.andante.audience.resource.ResourcePack
-import dev.andante.audience.resource.server.ResourcePackProperties
 import dev.andante.audience.resource.server.ResourcePackServer
 import net.fabricmc.api.ModInitializer
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents
 import net.fabricmc.fabric.api.event.player.UseItemCallback
 import net.minecraft.item.Items
+import net.minecraft.server.MinecraftServer.ServerResourcePackProperties
 import net.minecraft.util.TypedActionResult
 import org.slf4j.LoggerFactory
 import java.nio.file.Path
@@ -16,11 +16,11 @@ import kotlin.io.path.readBytes
 object AudienceTest : ModInitializer {
     private val byteArray = Path.of("resources.zip").readBytes()
     private val resourcePack = ResourcePack(byteArray)
-    private val properties: ResourcePackProperties
+    private val properties: ServerResourcePackProperties
 
     private val otherByteArray = Path.of("resources2.zip").readBytes()
     private val otherResourcePack = ResourcePack(otherByteArray)
-    private val otherProperties: ResourcePackProperties
+    private val otherProperties: ServerResourcePackProperties
 
     private val resourcePackServer = ResourcePackServer("localhost", 25566).apply {
         properties = registerResourcePack(resourcePack)

@@ -2,8 +2,10 @@ package dev.andante.audience.resource.server
 
 import com.sun.net.httpserver.HttpServer
 import dev.andante.audience.resource.ResourcePack
+import net.minecraft.server.MinecraftServer.ServerResourcePackProperties
 import net.minecraft.text.Text
 import java.net.InetSocketAddress
+import java.util.UUID
 
 /**
  * A wrapper around an http server for serving resource packs.
@@ -56,7 +58,7 @@ class ResourcePackServer(
     /**
      * Registers a resource pack to be handled by this server.
      */
-    fun registerResourcePack(resourcePack: ResourcePack): ResourcePackProperties {
+    fun registerResourcePack(resourcePack: ResourcePack): ServerResourcePackProperties {
         val hash = resourcePack.hash
         httpServer.createContext("/$hash", ResourcePackRequestHandler(resourcePack))
         return createResourcePackProperties(resourcePack)
@@ -69,9 +71,9 @@ class ResourcePackServer(
         resourcePack: ResourcePack,
         required: Boolean = true,
         prompt: Text? = null
-    ): ResourcePackProperties {
+    ): ServerResourcePackProperties {
         val url = getUrl(resourcePack)
-        return ResourcePackProperties(url, resourcePack.hash, required, prompt)
+        return ServerResourcePackProperties(UUID.nameUUIDFromBytes(resourcePack.bytes), url, resourcePack.hash, required, prompt)
     }
 
     /**

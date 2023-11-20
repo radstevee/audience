@@ -4,10 +4,10 @@ import dev.andante.audience.Audience;
 import dev.andante.audience.mixinterface.AudiencePlayerAccessor;
 import dev.andante.audience.player.PlayerList;
 import dev.andante.audience.player.PlayerReference;
-import dev.andante.audience.resource.server.ResourcePackProperties;
 import dev.andante.audience.resource.server.ResourcePackRequestCallback;
 import net.minecraft.network.packet.c2s.common.ResourcePackStatusC2SPacket;
 import net.minecraft.network.packet.s2c.common.ResourcePackSendS2CPacket;
+import net.minecraft.server.MinecraftServer.ServerResourcePackProperties;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.jetbrains.annotations.NotNull;
@@ -33,7 +33,7 @@ public abstract class ServerPlayerEntityMixin implements Audience, PlayerReferen
      */
     @Unique
     @Nullable
-    private ResourcePackProperties lastResourcePack = null;
+    private ServerResourcePackProperties lastResourcePack = null;
 
     @Override
     public @NotNull PlayerList getAudiencePlayers() {
@@ -49,12 +49,12 @@ public abstract class ServerPlayerEntityMixin implements Audience, PlayerReferen
 
     @Nullable
     @Override
-    public ResourcePackProperties getLastResourcePack() {
+    public ServerResourcePackProperties getLastResourcePack() {
         return this.lastResourcePack;
     }
 
     @Override
-    public void setResourcePack(ResourcePackProperties properties, @Nullable ResourcePackRequestCallback callback) {
+    public void setResourcePack(ServerResourcePackProperties properties, @Nullable ResourcePackRequestCallback callback) {
         if (properties == this.lastResourcePack) {
             if (callback != null) {
                 callback.onStatus(ResourcePackStatusC2SPacket.Status.SUCCESSFULLY_LOADED);
@@ -66,10 +66,11 @@ public abstract class ServerPlayerEntityMixin implements Audience, PlayerReferen
         if (properties != null) {
             this.networkHandler.sendPacket(
                     new ResourcePackSendS2CPacket(
-                            properties.getUrl(),
-                            properties.getHash(),
-                            properties.getRequired(),
-                            properties.getPrompt()
+                            properties.id(),
+                            properties.url(),
+                            properties.hash(),
+                            properties.isRequired(),
+                            properties.prompt()
                     )
             );
         }

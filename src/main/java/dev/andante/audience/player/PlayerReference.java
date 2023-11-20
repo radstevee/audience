@@ -88,7 +88,7 @@ public interface PlayerReference extends Audience {
             return "Unknown";
         } else {
             // return online name
-            return player.getEntityName();
+            return player.getGameProfile().getName();
         }
     }
 

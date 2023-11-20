@@ -44,7 +44,7 @@ public class ServerCommonNetworkHandlerMixin {
 
         ResourcePackRequestCallback callback = ResourcePackRequestCallback.Companion.getCallback(this.uuid);
         if (callback != null) {
-            ResourcePackStatusC2SPacket.Status status = packet.getStatus();
+            ResourcePackStatusC2SPacket.Status status = packet.status();
 
             // callback
             callback.onStatus(status);
