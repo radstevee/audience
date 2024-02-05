@@ -5,7 +5,6 @@
     "mixins": [
         "BlockMixin",
         "BlockStateMixin",
-        "ServerCommonNetworkHandlerMixin",
         "ServerPlayerEntityMixin",
         "ServerWorldMixin"
     ],

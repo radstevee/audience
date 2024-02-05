@@ -1,7 +1,6 @@
-package dev.andante.audience.resource.server
+package dev.andante.audience.resource
 
 import com.sun.net.httpserver.HttpServer
-import dev.andante.audience.resource.ResourcePack
 import net.minecraft.server.MinecraftServer.ServerResourcePackProperties
 import net.minecraft.text.Text
 import java.net.InetSocketAddress

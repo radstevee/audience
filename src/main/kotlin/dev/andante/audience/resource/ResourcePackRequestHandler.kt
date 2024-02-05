@@ -1,8 +1,7 @@
-package dev.andante.audience.resource.server
+package dev.andante.audience.resource
 
 import com.sun.net.httpserver.HttpExchange
 import com.sun.net.httpserver.HttpHandler
-import dev.andante.audience.resource.ResourcePack
 import org.apache.http.HttpHeaders
 import org.apache.http.client.methods.HttpGet
 import org.slf4j.Logger

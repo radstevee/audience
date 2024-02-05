@@ -1,7 +1,6 @@
 package dev.andante.audience;
 
 import dev.andante.audience.player.PlayerList;
-import dev.andante.audience.resource.server.ResourcePackRequestCallback;
 import dev.andante.audience.sound.ISound;
 import dev.andante.audience.sound.SoundStop;
 import dev.andante.audience.title.Title;
@@ -11,7 +10,6 @@ import net.minecraft.network.packet.s2c.play.BundleS2CPacket;
 import net.minecraft.network.packet.s2c.play.ClearTitleS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.MinecraftServer.ServerResourcePackProperties;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -20,7 +18,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Pair;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -207,20 +204,6 @@ public interface Audience {
      */
     default void packet(Function<ServerPlayerEntity, Packet<?>> packet) {
         forEachAudience(player -> player.networkHandler.sendPacket(packet.apply(player)));
-    }
-
-    /**
-     * Sets all audience player resource packs to the given resource pack.
-     */
-    default void setResourcePack(ServerResourcePackProperties properties, @Nullable ResourcePackRequestCallback callback) {
-        forEachAudience(player -> player.setResourcePack(properties, callback));
-    }
-
-    /**
-     * Sets all audience player resource packs to the given resource pack.
-     */
-    default void setResourcePack(ServerResourcePackProperties properties) {
-        setResourcePack(properties, null);
     }
 
     /**
