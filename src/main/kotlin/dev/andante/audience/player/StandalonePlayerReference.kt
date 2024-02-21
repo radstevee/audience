@@ -1,9 +1,11 @@
 package dev.andante.audience.player
 
+import com.mojang.datafixers.util.Either
 import com.mojang.serialization.Codec
 import com.mojang.serialization.codecs.RecordCodecBuilder
 import net.minecraft.util.Uuids
 import java.util.UUID
+import java.util.function.Function
 
 /**
  * An instantiatiable, unattached player reference.
@@ -35,17 +37,33 @@ class StandalonePlayerReference(private val referenceImplUuid: UUID) : PlayerRef
     }
 
     override fun toString(): String {
-        return "$referenceUuid[$playerName]"
+        return "StandalonePlayerReference[$referenceUuid]"
     }
 
     companion object {
         /**
-         * The codec for this class.
+         * The legacy codec for this class. Places the data within an unnecessary compound.
          */
-        val CODEC: Codec<StandalonePlayerReference> = RecordCodecBuilder.create { instance ->
+        private val LEGACY_CODEC: Codec<StandalonePlayerReference> = RecordCodecBuilder.create { instance ->
             instance.group(
                 Uuids.CODEC.fieldOf("uuid").forGetter(PlayerReference::getReferenceUuid)
             ).apply(instance, ::StandalonePlayerReference)
         }
+
+        /**
+         * The modern codec which maps the UUID codec to the standalone player reference.
+         */
+        private val XMAP_CODEC: Codec<StandalonePlayerReference> = Uuids.CODEC.xmap(
+            ::StandalonePlayerReference,
+            StandalonePlayerReference::getReferenceUuid
+        )
+
+        /**
+         * The codec for this class.
+         */
+        val CODEC: Codec<StandalonePlayerReference> = Codec.either(XMAP_CODEC, LEGACY_CODEC).xmap(
+            { it.map(Function.identity(), Function.identity()) },
+            { Either.left(it) }
+        )
     }
 }
