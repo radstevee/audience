@@ -8,46 +8,49 @@ import dev.andante.audience.resource.ResourcePack
 import dev.andante.audience.resource.ResourcePackServer
 import net.fabricmc.api.ModInitializer
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents
-import net.minecraft.server.MinecraftServer.ServerResourcePackProperties
 import org.slf4j.LoggerFactory
 import java.nio.file.Path
 import kotlin.io.path.readBytes
+import kotlin.time.measureTimedValue
 
 object AudienceTest : ModInitializer {
+    private const val TEST_RESOURCE_PACK: Boolean = false
+
     private val logger = LoggerFactory.getLogger("Audience Test")
-
-    private val byteArray = try {
-        Path.of("resources.zip").readBytes()
-    } catch (exception: Exception) {
-        logger.error("No resources.zip", exception)
-        throw exception
-    }
-
-    private val resourcePack = ResourcePack(byteArray)
-    private val properties: ServerResourcePackProperties
-
-    private val otherByteArray = try {
-        Path.of("resources2.zip").readBytes()
-    } catch (exception: Exception) {
-        logger.error("No resources2.zip", exception)
-        throw exception
-    }
-
-    private val otherResourcePack = ResourcePack(otherByteArray)
-    private val otherProperties: ServerResourcePackProperties
-
-    private val resourcePackServer = ResourcePackServer("localhost", 25566).apply {
-        properties = registerResourcePack(resourcePack)
-        otherProperties = registerResourcePack(otherResourcePack)
-    }
 
     override fun onInitialize() {
         LoggerFactory.getLogger("Audience Test").info("Initializing")
-        resourcePackServer.startServer()
-        println("Started server on port ${resourcePackServer.port}")
 
-        ServerLifecycleEvents.SERVER_STOPPING.register {
-            resourcePackServer.stopServer()
+        if (TEST_RESOURCE_PACK) {
+            val byteArray = try {
+                Path.of("resources.zip").readBytes()
+            } catch (exception: Exception) {
+                logger.error("No resources.zip", exception)
+                throw exception
+            }
+
+            val resourcePack = ResourcePack(byteArray)
+
+            val otherByteArray = try {
+                Path.of("resources2.zip").readBytes()
+            } catch (exception: Exception) {
+                logger.error("No resources2.zip", exception)
+                throw exception
+            }
+
+            val otherResourcePack = ResourcePack(otherByteArray)
+
+            val resourcePackServer = ResourcePackServer("localhost", 25566).apply {
+                registerResourcePack(resourcePack)
+                registerResourcePack(otherResourcePack)
+            }
+
+            resourcePackServer.startServer()
+            println("Started server on port ${resourcePackServer.port}")
+
+            ServerLifecycleEvents.SERVER_STOPPING.register {
+                resourcePackServer.stopServer()
+            }
         }
 
         // test player reference codec IO (ensure possible migration of old uuids)
@@ -67,5 +70,8 @@ object AudienceTest : ModInitializer {
         val list = PlayerList(listOf(inputReference))
         val listJson = PlayerList.CODEC.encodeStart(JsonOps.INSTANCE, list).resultOrPartial(logger::error).orElseThrow()
         println(listJson)
+
+        val measuredApi = measureTimedValue(inputReference::getMojangApiPlayerName)
+        println("Took ${measuredApi.duration.inWholeMilliseconds} ms to fetch \"${measuredApi.value}\"")
     }
 }
