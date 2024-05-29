@@ -182,10 +182,10 @@ public interface Audience {
                 ServerPlayNetworkHandler handler = player.networkHandler;
                 if (player.notInAnyWorld) {
                     player.notInAnyWorld = false;
-                    handler.player = playerManager.respawnPlayer(player, true);
+                    handler.player = playerManager.respawnPlayer(player, true, Entity.RemovalReason.KILLED);
                 } else {
                     if (!(player.getHealth() > 0)) {
-                        handler.player = playerManager.respawnPlayer(player, false);
+                        handler.player = playerManager.respawnPlayer(player, false, Entity.RemovalReason.KILLED);
                     }
                 }
             }
