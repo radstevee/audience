@@ -2,7 +2,7 @@ package dev.andante.audience.test
 
 import com.google.gson.JsonParser
 import com.mojang.serialization.JsonOps
-import dev.andante.audience.player.PlayerList
+import dev.andante.audience.player.PlayerSet
 import dev.andante.audience.player.StandalonePlayerReference
 import dev.andante.audience.resource.ResourcePack
 import dev.andante.audience.resource.ResourcePackServer
@@ -67,8 +67,8 @@ object AudienceTest : ModInitializer {
         val outputJson = output.resultOrPartial(logger::error).orElseThrow()
         println(outputJson)
 
-        val list = PlayerList(listOf(inputReference))
-        val listJson = PlayerList.CODEC.encodeStart(JsonOps.INSTANCE, list).resultOrPartial(logger::error).orElseThrow()
+        val list = PlayerSet(listOf(inputReference))
+        val listJson = PlayerSet.CODEC.encodeStart(JsonOps.INSTANCE, list).resultOrPartial(logger::error).orElseThrow()
         println(listJson)
 
         val measuredApi = measureTimedValue(inputReference::getMojangApiPlayerName)

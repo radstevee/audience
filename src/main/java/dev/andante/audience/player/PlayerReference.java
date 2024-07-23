@@ -145,12 +145,12 @@ public interface PlayerReference extends Audience {
     }
 
     @Override
-    default PlayerList getAudiencePlayers() {
+    default PlayerSet getAudiencePlayers() {
         ServerPlayerEntity player = this.getPlayer();
         if (player == null) {
-            return new PlayerList();
+            return new PlayerSet();
         }
 
-        return new PlayerList(Collections.singletonList(player));
+        return new PlayerSet(Collections.singletonList(player));
     }
 }

@@ -1,6 +1,6 @@
 package dev.andante.audience;
 
-import dev.andante.audience.player.PlayerList;
+import dev.andante.audience.player.PlayerSet;
 import dev.andante.audience.sound.ISound;
 import dev.andante.audience.sound.SoundStop;
 import dev.andante.audience.title.Title;
@@ -27,8 +27,8 @@ public interface Audience {
     /**
      * The players of this audience.
      */
-    default PlayerList getAudiencePlayers() {
-        return new PlayerList();
+    default PlayerSet getAudiencePlayers() {
+        return new PlayerSet();
     }
 
     /**

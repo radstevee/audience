@@ -1,6 +1,6 @@
 package dev.andante.audience
 
-import dev.andante.audience.player.PlayerList
+import dev.andante.audience.player.PlayerSet
 
 /**
  * An audience composed of other audiences.
@@ -11,8 +11,8 @@ class CompoundAudience(
      */
     private vararg val audiences: Audience
 ) : Audience {
-    override fun getAudiencePlayers(): PlayerList {
+    override fun getAudiencePlayers(): PlayerSet {
         val players = audiences.flatMap(Audience::getAudiencePlayers)
-        return PlayerList(players)
+        return PlayerSet(players)
     }
 }

@@ -1,7 +1,7 @@
 package dev.andante.audience.mixin;
 
 import dev.andante.audience.Audience;
-import dev.andante.audience.player.PlayerList;
+import dev.andante.audience.player.PlayerSet;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import org.spongepowered.asm.mixin.Mixin;
@@ -16,7 +16,7 @@ public abstract class ServerWorldMixin implements Audience {
     public abstract List<ServerPlayerEntity> getPlayers();
 
     @Override
-    public PlayerList getAudiencePlayers() {
-        return new PlayerList(getPlayers());
+    public PlayerSet getAudiencePlayers() {
+        return new PlayerSet(getPlayers());
     }
 }

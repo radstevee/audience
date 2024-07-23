@@ -1,8 +1,8 @@
 package dev.andante.audience.mixin;
 
 import dev.andante.audience.Audience;
-import dev.andante.audience.player.PlayerList;
 import dev.andante.audience.player.PlayerReference;
+import dev.andante.audience.player.PlayerSet;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
@@ -14,9 +14,9 @@ import java.util.UUID;
 @Mixin(ServerPlayerEntity.class)
 public abstract class ServerPlayerEntityMixin implements Audience, PlayerReference {
     @Override
-    public @NotNull PlayerList getAudiencePlayers() {
+    public @NotNull PlayerSet getAudiencePlayers() {
         ServerPlayerEntity that = (ServerPlayerEntity) (Object) this;
-        return new PlayerList(Collections.singletonList(that));
+        return new PlayerSet(Collections.singletonList(that));
     }
 
     @Override
