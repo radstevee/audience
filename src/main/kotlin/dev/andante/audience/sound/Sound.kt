@@ -20,12 +20,12 @@ data class Sound(
     /**
      * The volume of the sound.
      */
-    val volume: Float = 1.0f,
+    override val volume: Float = 1.0f,
 
     /**
      * The pitch of the sound.
      */
-    val pitch: Float = 1.0f
+    override val pitch: Float = 1.0f
 ) : ISound {
     /**
      * Modifies the category of this sound.
