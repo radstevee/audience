@@ -2,6 +2,9 @@ package dev.andante.audience.resource
 
 import com.sun.net.httpserver.HttpExchange
 import com.sun.net.httpserver.HttpHandler
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
 import org.apache.http.HttpHeaders
 import org.apache.http.client.methods.HttpGet
 import org.slf4j.Logger
@@ -22,6 +25,7 @@ class ResourcePackRequestHandler(
      */
     private val responseLength = resourcePack.bytes.size.toLong()
 
+    @OptIn(DelicateCoroutinesApi::class)
     override fun handle(exchange: HttpExchange?) {
         // throw npe if null
         exchange ?: run { return }
@@ -33,12 +37,14 @@ class ResourcePackRequestHandler(
         }
 
         // handle request
-        try {
-            sendResourcePack(exchange)
-        } catch (exception: Exception) {
-            onException(exception)
-        } finally {
-            exchange.close()
+        GlobalScope.async {
+            try {
+                sendResourcePack(exchange)
+            } catch (exception: Exception) {
+                onException(exception)
+            } finally {
+                exchange.close()
+            }
         }
     }
 
