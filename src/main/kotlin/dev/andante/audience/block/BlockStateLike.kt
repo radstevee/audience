@@ -9,5 +9,7 @@ interface BlockStateLike {
     /**
      * The block state representation of this object.
      */
-    val audienceBlockState: BlockState
+    fun getAudienceBlockState(): BlockState {
+        throw AssertionError("Not implemented in mixin")
+    }
 }
