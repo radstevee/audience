@@ -2,15 +2,18 @@ package dev.andante.audience.test
 
 import com.google.gson.JsonParser
 import com.mojang.serialization.JsonOps
+import dev.andante.audience.Audience
 import dev.andante.audience.player.PlayerSet
 import dev.andante.audience.player.StandalonePlayerReference
 import dev.andante.audience.resource.ResourcePack
 import dev.andante.audience.resource.ResourcePackServer
 import net.fabricmc.api.ModInitializer
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents
 import org.slf4j.LoggerFactory
 import java.nio.file.Path
 import kotlin.io.path.readBytes
+import kotlin.math.sin
 import kotlin.time.measureTimedValue
 
 object AudienceTest : ModInitializer {
@@ -19,7 +22,16 @@ object AudienceTest : ModInitializer {
     private val logger = LoggerFactory.getLogger("Audience Test")
 
     override fun onInitialize() {
-        LoggerFactory.getLogger("Audience Test").info("Initializing")
+        logger.info("Initializing")
+
+        ServerTickEvents.END_SERVER_TICK.register { server ->
+            val playerManager = server.playerManager
+            playerManager.playerList.forEach { player ->
+                val audience = player as Audience
+                val value = 1.0f - sin(player.age / 10.0f)
+                audience.setTintPercentage(value)
+            }
+        }
 
         if (TEST_RESOURCE_PACK) {
             val byteArray = try {

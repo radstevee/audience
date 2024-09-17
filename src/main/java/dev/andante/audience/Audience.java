@@ -9,6 +9,7 @@ import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.BundleS2CPacket;
 import net.minecraft.network.packet.s2c.play.ClearTitleS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket;
+import net.minecraft.network.packet.s2c.play.WorldBorderInitializeS2CPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
@@ -18,9 +19,13 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Pair;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.border.WorldBorder;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
+
+import static net.minecraft.util.math.MathHelper.clamp;
+import static net.minecraft.util.math.MathHelper.floor;
 
 @SuppressWarnings("unused")
 public interface Audience {
@@ -189,6 +194,46 @@ public interface Audience {
                     }
                 }
             }
+        });
+    }
+
+    /**
+     * Sets all audience player's world borders to make a red tint on their vignette.
+     */
+    default void setTintPercentage(float percentage) {
+        float clampedPercentage = clamp(percentage, 0.0f, 1.0f);
+        packet(player -> {
+            WorldBorder border = new WorldBorder();
+
+            border.setCenter(player.getX(), player.getZ());
+
+            double baseSize = 10_000_000;
+            border.setSize(baseSize);
+
+            double warningDistance = clampedPercentage * (baseSize * 10);
+            border.setWarningBlocks(floor(warningDistance));
+
+            border.setWarningTime(0);
+
+            return new WorldBorderInitializeS2CPacket(border);
+        });
+    }
+
+    /**
+     * Sets all audience players' world borders.
+     */
+    default void setWorldBorder(WorldBorder border) {
+        packet(new WorldBorderInitializeS2CPacket(border));
+    }
+
+    /**
+     * Resets all audience players' world borders to that of their world.
+     */
+    default void resetWorldBorder() {
+        packet(player -> {
+            ServerWorld world = player.getServerWorld();
+            WorldBorder border = world.getWorldBorder();
+            return new WorldBorderInitializeS2CPacket(border);
         });
     }
 
