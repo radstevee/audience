@@ -5,6 +5,7 @@
     "mixins": [
         "BlockMixin",
         "BlockStateMixin",
+        "MinecraftServerMixin",
         "ServerPlayerEntityMixin",
         "ServerWorldMixin"
     ],
