@@ -5,7 +5,7 @@ import com.google.common.hash.Hashing
 /**
  * A complete resource pack.
  */
-data class ResourcePack(
+data class ByteResourcePack(
     /**
      * All bytes composting the resource pack.
      */
@@ -20,7 +20,7 @@ data class ResourcePack(
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as ResourcePack
+        other as ByteResourcePack
 
         return hash == other.hash
     }
@@ -33,7 +33,6 @@ data class ResourcePack(
         /**
          * Hashes a byte array to a sha1 string.
          */
-        @Suppress("DEPRECATION")
         private fun hashSha1(bytes: ByteArray): String {
             return Hashing.sha1().hashBytes(bytes).toString()
         }

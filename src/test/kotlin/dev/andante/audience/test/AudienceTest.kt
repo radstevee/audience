@@ -5,8 +5,7 @@ import com.mojang.serialization.JsonOps
 import dev.andante.audience.Audience
 import dev.andante.audience.player.PlayerSet
 import dev.andante.audience.player.StandalonePlayerReference
-import dev.andante.audience.resource.ResourcePack
-import dev.andante.audience.resource.ResourcePackServer
+import dev.andante.audience.resource.ByteResourcePack
 import net.fabricmc.api.ModInitializer
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents
@@ -41,7 +40,7 @@ object AudienceTest : ModInitializer {
                 throw exception
             }
 
-            val resourcePack = ResourcePack(byteArray)
+            val resourcePack = ByteResourcePack(byteArray)
 
             val otherByteArray = try {
                 Path.of("resources2.zip").readBytes()
@@ -50,7 +49,7 @@ object AudienceTest : ModInitializer {
                 throw exception
             }
 
-            val otherResourcePack = ResourcePack(otherByteArray)
+            val otherResourcePack = ByteResourcePack(otherByteArray)
 
             val resourcePackServer = ResourcePackServer("localhost", 25566).apply {
                 registerResourcePack(resourcePack)
