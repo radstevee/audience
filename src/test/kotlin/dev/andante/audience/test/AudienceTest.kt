@@ -5,19 +5,13 @@ import com.mojang.serialization.JsonOps
 import dev.andante.audience.Audience
 import dev.andante.audience.player.PlayerSet
 import dev.andante.audience.player.StandalonePlayerReference
-import dev.andante.audience.resource.ByteResourcePack
 import net.fabricmc.api.ModInitializer
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents
 import org.slf4j.LoggerFactory
-import java.nio.file.Path
-import kotlin.io.path.readBytes
 import kotlin.math.sin
 import kotlin.time.measureTimedValue
 
 object AudienceTest : ModInitializer {
-    private const val TEST_RESOURCE_PACK: Boolean = false
-
     private val logger = LoggerFactory.getLogger("Audience Test")
 
     override fun onInitialize() {
@@ -29,38 +23,6 @@ object AudienceTest : ModInitializer {
                 val audience = player as Audience
                 val value = 1.0f - sin(player.age / 10.0f)
                 audience.setTintPercentage(value)
-            }
-        }
-
-        if (TEST_RESOURCE_PACK) {
-            val byteArray = try {
-                Path.of("resources.zip").readBytes()
-            } catch (exception: Exception) {
-                logger.error("No resources.zip", exception)
-                throw exception
-            }
-
-            val resourcePack = ByteResourcePack(byteArray)
-
-            val otherByteArray = try {
-                Path.of("resources2.zip").readBytes()
-            } catch (exception: Exception) {
-                logger.error("No resources2.zip", exception)
-                throw exception
-            }
-
-            val otherResourcePack = ByteResourcePack(otherByteArray)
-
-            val resourcePackServer = ResourcePackServer("localhost", 25566).apply {
-                registerResourcePack(resourcePack)
-                registerResourcePack(otherResourcePack)
-            }
-
-            resourcePackServer.startServer()
-            println("Started server on port ${resourcePackServer.port}")
-
-            ServerLifecycleEvents.SERVER_STOPPING.register {
-                resourcePackServer.stopServer()
             }
         }
 
