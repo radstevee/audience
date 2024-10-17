@@ -18,6 +18,11 @@ object ResourcePackHandler : HttpInjector() {
         val response = ctx.httpBuffer()
 
         val path = request.requestURI.removePrefix("/")
+
+        if (path.isEmpty()) {
+            return response
+        }
+
         if (!path.matches(SHA1_REGEX)) {
             return response
         }
