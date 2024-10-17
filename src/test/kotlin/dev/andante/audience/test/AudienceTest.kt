@@ -5,14 +5,21 @@ import com.mojang.serialization.JsonOps
 import dev.andante.audience.Audience
 import dev.andante.audience.player.PlayerSet
 import dev.andante.audience.player.StandalonePlayerReference
+import dev.andante.audience.resource.ByteResourcePack
+import dev.andante.audience.resource.ResourcePackHandler
 import net.fabricmc.api.ModInitializer
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents
 import org.slf4j.LoggerFactory
+import kotlin.io.path.Path
+import kotlin.io.path.readBytes
 import kotlin.math.sin
 import kotlin.time.measureTimedValue
 
 object AudienceTest : ModInitializer {
     private val logger = LoggerFactory.getLogger("Audience Test")
+
+    val resourcePackBytes = Path("resources.zip").readBytes()
+    val resourcePackBytesTwo = Path("resources2.zip").readBytes()
 
     override fun onInitialize() {
         logger.info("Initializing")
@@ -46,5 +53,12 @@ object AudienceTest : ModInitializer {
 
         val measuredApi = measureTimedValue(inputReference::getMojangApiPlayerName)
         println("Took ${measuredApi.duration.inWholeMilliseconds} ms to fetch \"${measuredApi.value}\"")
+
+        val packOne = ByteResourcePack(resourcePackBytes)
+        val packTwo = ByteResourcePack(resourcePackBytesTwo)
+        ResourcePackHandler.add(packOne)
+        ResourcePackHandler.add(packTwo)
+        println(packOne.hash)
+        println(packTwo.hash)
     }
 }
