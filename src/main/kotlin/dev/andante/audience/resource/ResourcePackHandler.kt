@@ -17,6 +17,7 @@ object ResourcePackHandler : HttpInjector() {
 
         response.writeStatusLine("1.1", 200, "OK")
         response.writeHeader("Content-Type", "application/zip")
+        response.writeHeader("Content-Length", pack.size.toString())
         response.writeBytes(pack)
 
         return response
