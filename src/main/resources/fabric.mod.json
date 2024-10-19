@@ -21,6 +21,10 @@
                 "dev/andante/audience/Audience",
                 "dev/andante/audience/player/PlayerReference"
             ],
+            "com/mojang/authlib/GameProfile": [
+                "dev/andante/audience/Audience",
+                "dev/andante/audience/player/PlayerReference"
+            ],
             "net/minecraft/server/MinecraftServer": [ "dev/andante/audience/Audience" ],
             "net/minecraft/class_3218": [ "dev/andante/audience/Audience" ],
             "net/minecraft/class_2248": [ "dev/andante/audience/block/BlockStateLike" ],

@@ -3,12 +3,16 @@ package dev.andante.audience.test
 import com.google.gson.JsonParser
 import com.mojang.serialization.JsonOps
 import dev.andante.audience.Audience
+import dev.andante.audience.player.PlayerReference
 import dev.andante.audience.player.PlayerSet
 import dev.andante.audience.player.StandalonePlayerReference
 import dev.andante.audience.resource.ByteResourcePack
 import dev.andante.audience.resource.ResourcePackHandler
 import net.fabricmc.api.ModInitializer
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents
+import net.fabricmc.fabric.api.networking.v1.ServerConfigurationConnectionEvents
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents
+import net.minecraft.command.argument.EntityArgumentType.player
 import org.slf4j.LoggerFactory
 import kotlin.io.path.Path
 import kotlin.io.path.readBytes
@@ -60,5 +64,10 @@ object AudienceTest : ModInitializer {
         ResourcePackHandler.add(packTwo)
         println(packOne.hash)
         println(packTwo.hash)
+
+        ServerConfigurationConnectionEvents.BEFORE_CONFIGURE.register { handler, server ->
+            val reference = handler.debugProfile as PlayerReference
+            println(reference.hardReference)
+        }
     }
 }

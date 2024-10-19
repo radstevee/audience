@@ -1,5 +1,6 @@
 package dev.andante.audience.mixin;
 
+import com.mojang.authlib.GameProfile;
 import dev.andante.audience.Audience;
 import dev.andante.audience.player.PlayerReference;
 import dev.andante.audience.player.PlayerSet;
@@ -13,8 +14,8 @@ import java.util.List;
 import java.util.UUID;
 
 @SuppressWarnings("AddedMixinMembersNamePattern")
-@Mixin(ServerPlayerEntity.class)
-public abstract class ServerPlayerEntityMixin implements Audience, PlayerReference {
+@Mixin(GameProfile.class)
+public abstract class GameProfileMixin implements Audience, PlayerReference {
     @Override
     public @NotNull PlayerSet getAudiencePlayers() {
         StandalonePlayerReference reference = this.getHardReference();
@@ -23,8 +24,8 @@ public abstract class ServerPlayerEntityMixin implements Audience, PlayerReferen
 
     @Override
     public @NotNull UUID getReferenceUuid() {
-        ServerPlayerEntity that = (ServerPlayerEntity) (Object) this;
-        return that.getUuid();
+        GameProfile that = (GameProfile) (Object) this;
+        return that.getId();
     }
 
     @Override
