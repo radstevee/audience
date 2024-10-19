@@ -1,5 +1,6 @@
 package dev.andante.audience.player
 
+import com.mojang.authlib.GameProfile
 import com.mojang.datafixers.util.Either
 import com.mojang.serialization.Codec
 import com.mojang.serialization.codecs.RecordCodecBuilder
@@ -65,5 +66,10 @@ class StandalonePlayerReference(private val referenceImplUuid: UUID) : PlayerRef
             { it.map(Function.identity(), Function.identity()) },
             { Either.left(it) }
         )
+
+        /**
+         * This game profile as a player reference.
+         */
+        val GameProfile.playerReference get() = this as PlayerReference
     }
 }
