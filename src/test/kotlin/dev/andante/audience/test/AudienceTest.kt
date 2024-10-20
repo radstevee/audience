@@ -11,9 +11,11 @@ import dev.andante.audience.resource.ResourcePackHandler
 import net.fabricmc.api.ModInitializer
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents
 import net.fabricmc.fabric.api.networking.v1.ServerConfigurationConnectionEvents
-import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents
-import net.minecraft.command.argument.EntityArgumentType.player
+import net.minecraft.server.MinecraftServer
+import net.minecraft.server.network.SendResourcePackTask
+import net.minecraft.text.Text
 import org.slf4j.LoggerFactory
+import java.util.UUID
 import kotlin.io.path.Path
 import kotlin.io.path.readBytes
 import kotlin.math.sin
@@ -68,6 +70,10 @@ object AudienceTest : ModInitializer {
         ServerConfigurationConnectionEvents.BEFORE_CONFIGURE.register { handler, server ->
             val reference = handler.debugProfile as PlayerReference
             println(reference.hardReference)
+        }
+
+        ServerConfigurationConnectionEvents.CONFIGURE.register { handler, server ->
+            handler.addTask(SendResourcePackTask(MinecraftServer.ServerResourcePackProperties(UUID.randomUUID(), "http://localhost:25565/${packOne.hash}", packOne.hash, true, Text.literal("EEEE"))))
         }
     }
 }
