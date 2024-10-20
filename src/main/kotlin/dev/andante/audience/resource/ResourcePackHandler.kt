@@ -15,6 +15,10 @@ object ResourcePackHandler : HttpInjector() {
         val path = request.requestURI.removePrefix("/")
         val pack = resourcePacks[path] ?: return response
 
+        if (!ctx.channel().isActive) {
+            return response
+        }
+
         response.writeStatusLine("1.1", 200, "OK")
         response.writeHeader("Content-Type", "application/zip")
         response.writeHeader("Content-Length", pack.size.toString())
