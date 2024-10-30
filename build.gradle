@@ -26,7 +26,8 @@ dependencies {
     modImplementation "net.fabricmc:fabric-language-kotlin:$fabric_kotlin_version"
 
     include modImplementation ("com.github.yundom:kache:$kache_version")
-    include modImplementation ("net.mcbrawls:inject:$inject_version")
+    include modImplementation ("net.mcbrawls.inject:api:$inject_version")
+    include modImplementation ("net.mcbrawls.inject:fabric:$inject_version")
 }
 
 sourceSets {
@@ -55,12 +56,12 @@ processResources {
 }
 
 tasks.withType(JavaCompile).configureEach {
-    it.options.release = 17
+    it.options.release = 21
 }
 
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
     kotlinOptions {
-        jvmTarget = 17
+        jvmTarget = 21
     }
 }
 
